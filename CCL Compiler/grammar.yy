@@ -20,6 +20,7 @@ using namespace std;
 #include "error.h"
 #include "main.h"
 #include "scanner.h"
+#include "simpleSymbolTable.h"
 
 
 %}
@@ -79,12 +80,19 @@ program
           }
     ;
 functionConstant
-    : FUNCTION_CONSTANT_BEGIN formalParameterDeclarationPart expressionSequence FUNCTION_CONSTANT_END
-        { $$ = nAryTree< int >(FUNCTION_CONSTANT_BEGIN, $2, $3, FUNCTION_CONSTANT_END); }
+    : FUNCTION_CONSTANT_BEGIN 
+        {
+            symbolTable.enterScope();
+            }
+    formalParameterDeclarationPart expressionSequence FUNCTION_CONSTANT_END
+        { $$ = nAryTree< int >(FUNCTION_CONSTANT_BEGIN, $3, $4, FUNCTION_CONSTANT_END); 
+        symbolTable.leaveScope();
+        }
         ;
 formalParameterDeclarationPart
     : LEFT_PAREN formalParameterDeclarationList RIGHT_PAREN
-        { $$ = nAryTree< int >(LEFT_PAREN, $2, RIGHT_PAREN);}
+        { $$ = nAryTree< int >(LEFT_PAREN, $2, RIGHT_PAREN);
+            }
     | LEFT_PAREN RIGHT_PAREN
         { $$ = nAryTree< int >(LEFT_PAREN, RIGHT_PAREN);}
     ;
@@ -104,7 +112,15 @@ formalParameterDeclarationList
     ;
 formalParameterDeclaration
     : formalParameterType IDENTIFIER
-        { $$ = nAryTree< int >(IDENTIFIER, $1); }
+        { 
+            symbolTable.insert($2);
+            if (symbolTable.success())
+                $$ = nAryTree< int >(IDENTIFIER, $1, symbolTable.successAddress()); 
+            else {
+                reportSemanticError("duplicate variable declaration");
+                    $$ = nAryTree< int >(IDENTIFIER, 0); 
+                    }
+            }
     ;
 formalParameterType
     : unqualifiedFormalParameterType
@@ -219,11 +235,19 @@ primaryExpression
     | LEFT_PAREN expressionSequence RIGHT_PAREN
         { $$ = nAryTree< int >(LEFT_PAREN, $2, RIGHT_PAREN); }
     | WHILE_LOOP_BEGIN expressionSequence WHILE_LOOP_BODY_BEGIN expressionSequence WHILE_LOOP_END
-        { $$ = nAryTree< int >(WHILE_LOOP_BEGIN, $2, nAryTree< int >(WHILE_LOOP_BODY_BEGIN, $4, WHILE_LOOP_END)); }
-    | IF_BEGIN expressionSequence IF_TRUE_CLAUSE_BEGIN expressionSequence IF_FALSE_CLAUSE_BEGIN expressionSequence IF_END
-        { $$ = nAryTree< int >(IF_BEGIN, $2, nAryTree< int >(IF_TRUE_CLAUSE_BEGIN, $4, nAryTree< int >(IF_FALSE_CLAUSE_BEGIN, $6, IF_END), $4)); }
-    | CONTROL_BLOCK_BEGIN variableExpression BLOCK_BODY_BEGIN expressionSequence CONTROL_BLOCK_END
-        { $$ = nAryTree< int >(CONTROL_BLOCK_BEGIN, $2, nAryTree< int >(BLOCK_BODY_BEGIN, $4, CONTROL_BLOCK_END)); }
+        { 
+            $$ = nAryTree< int >(WHILE_LOOP_BEGIN, $2, nAryTree< int >(WHILE_LOOP_BODY_BEGIN, $4, WHILE_LOOP_END));
+            }
+    | IF_BEGIN expressionSequence IF_TRUE_CLAUSE_BEGIN 
+    expressionSequence IF_FALSE_CLAUSE_BEGIN expressionSequence IF_END
+        { 
+            $$ = nAryTree< int >(IF_BEGIN, $2, nAryTree< int >(IF_TRUE_CLAUSE_BEGIN, $4, nAryTree< int >(IF_FALSE_CLAUSE_BEGIN, $6, IF_END))); 
+            }
+    | CONTROL_BLOCK_BEGIN 
+    variableExpression BLOCK_BODY_BEGIN expressionSequence CONTROL_BLOCK_END
+        { 
+            $$ = nAryTree< int >(CONTROL_BLOCK_BEGIN, $3, nAryTree< int >(BLOCK_BODY_BEGIN, $5, CONTROL_BLOCK_END)); 
+            }
     | variableBlock
         { $$ = nAryTree< int >($1); }
     | primaryExpression LEFT_PAREN actualParameterPart RIGHT_PAREN
@@ -243,7 +267,15 @@ actualParameterList
     ;
 variableExpression
     : IDENTIFIER
-        { $$ = nAryTree< int >(IDENTIFIER); }
+        { 
+            symbolTable.retrieve($1);
+            if (symbolTable.success())
+                $$ = nAryTree< int >(IDENTIFIER, symbolTable.successAddress()); 
+            else{
+                reportSemanticError("undeclared variable");
+                $$ = nAryTree< int >(IDENTIFIER, 0);
+            }
+            }
     | primaryExpression LEFT_BRACKET expressionSequence RIGHT_BRACKET
         { $$ = nAryTree< int >(LEFT_BRACKET, $1, $3, RIGHT_BRACKET); }
     | primaryExpression DEREFERENCE_OP
@@ -258,8 +290,15 @@ constant
         { $$ = nAryTree< int >($1); }
     ;
 variableBlock
-    : VAR_BLOCK_BEGIN variableDeclarationList BLOCK_BODY_BEGIN expressionSequence VAR_BLOCK_END
-        { $$ = nAryTree< int >(VAR_BLOCK_BEGIN, $2, nAryTree< int >(BLOCK_BODY_BEGIN, $4), VAR_BLOCK_END); }
+    : VAR_BLOCK_BEGIN 
+        {
+            symbolTable.enterScope();
+            }
+    variableDeclarationList BLOCK_BODY_BEGIN expressionSequence VAR_BLOCK_END
+        { 
+            $$ = nAryTree< int >(VAR_BLOCK_BEGIN, $3, nAryTree< int >(BLOCK_BODY_BEGIN, $5), VAR_BLOCK_END); 
+            symbolTable.leaveScope();
+            }
     ;
 variableDeclarationList
     : variableDeclaration
@@ -277,7 +316,15 @@ variableDeclarationList
     ;
 variableDeclaration
     : variableType IDENTIFIER
-        { $$ = nAryTree< int >(IDENTIFIER, $1); }
+        { 
+            symbolTable.insert($2);
+            if (symbolTable.success())
+                $$ = nAryTree< int >(IDENTIFIER, $1, symbolTable.successAddress()); 
+            else {
+                    reportSemanticError("duplicate variable declaration");
+                    $$ = nAryTree< int >(IDENTIFIER, 0); 
+                    } 
+            }
     ;
 variableType
     : formalParameterType

@@ -86,6 +86,83 @@ class programAbstractSyntaxTreeNode : public abstractAbstractSyntaxTreeNode
 
     };
 
+class functionConstantAbstractSyntaxTree : public abstractSyntaxTree
+{
+
+    private:
+
+    public:
+
+        functionConstantAbstractSyntaxTree();
+
+        functionConstantAbstractSyntaxTree(abstractSyntaxTree const & parameter, abstractSyntaxTree const & body);
+
+    };
+
+
+class functionConstantAbstractSyntaxTreeNode : public abstractAbstractSyntaxTreeNode
+{
+
+    private:
+
+        abstractSyntaxTree myParameter;
+        abstractSyntaxTree myBody;
+
+        functionConstantAbstractSyntaxTreeNode();  // leave unimplemented
+        functionConstantAbstractSyntaxTreeNode(functionConstantAbstractSyntaxTreeNode const & other);  // leave unimplemented
+        functionConstantAbstractSyntaxTreeNode & operator =(functionConstantAbstractSyntaxTreeNode const & other);  // leave unimplemented
+
+    public:
+
+        functionConstantAbstractSyntaxTreeNode(abstractSyntaxTree const & parameter, abstractSyntaxTree const & body);
+
+        abstractSyntaxTree & parameterReference();
+        abstractSyntaxTree const & parameterConstReference() const;
+
+        abstractSyntaxTree & bodyReference();
+        abstractSyntaxTree const & bodyConstReference() const;
+
+        virtual void accept(abstractAbstractSyntaxTreeVisitor & visitor);
+
+    };
+
+
+class formalParameterDeclarationPartAbstractSyntaxTree : public abstractSyntaxTree
+{
+
+    private:
+
+    public:
+
+        formalParameterDeclarationPartAbstractSyntaxTree();
+
+        formalParameterDeclarationPartAbstractSyntaxTree(abstractSyntaxTree const & body);
+
+    };
+
+
+class formalParameterDeclarationPartAbstractSyntaxTreeNode : public abstractAbstractSyntaxTreeNode
+{
+
+    private:
+
+        abstractSyntaxTree myBody;
+
+        formalParameterDeclarationPartAbstractSyntaxTreeNode();  // leave unimplemented
+        formalParameterDeclarationPartAbstractSyntaxTreeNode(formalParameterDeclarationPartAbstractSyntaxTreeNode const & other);  // leave unimplemented
+        formalParameterDeclarationPartAbstractSyntaxTreeNode & operator =(formalParameterDeclarationPartAbstractSyntaxTreeNode const & other);  // leave unimplemented
+
+    public:
+
+        formalParameterDeclarationPartAbstractSyntaxTreeNode(abstractSyntaxTree const & body);
+
+        abstractSyntaxTree & bodyReference();
+        abstractSyntaxTree const & bodyConstReference() const;
+
+        virtual void accept(abstractAbstractSyntaxTreeVisitor & visitor);
+
+    };
+
 
 class expressionSequenceAbstractSyntaxTree : public abstractSyntaxTree
 {
@@ -676,6 +753,8 @@ class abstractAbstractSyntaxTreeVisitor
         virtual ~abstractAbstractSyntaxTreeVisitor();
 
         virtual void visitProgramAbstractSyntaxTreeNode(programAbstractSyntaxTreeNode * node) = 0;
+        virtual void visitFunctionConstantAbstractSyntaxTreeNode(functionConstantAbstractSyntaxTreeNode * node) = 0;
+        virtual void visitFormalParameterDeclarationPartAbstractSyntaxTreeNode(formalParameterDeclarationPartAbstractSyntaxTreeNode * node) = 0;
         virtual void visitExpressionSequenceAbstractSyntaxTreeNode(expressionSequenceAbstractSyntaxTreeNode * node) = 0;
         virtual void visitAssignmentExpressionAbstractSyntaxTreeNode(assignmentExpressionAbstractSyntaxTreeNode * node) = 0;
         virtual void visitAbstractBinaryArithmeticExpressionAbstractSyntaxTreeNode(abstractBinaryArithmeticExpressionAbstractSyntaxTreeNode * node) = 0;

@@ -4,6 +4,7 @@
 
 
 #include "bareBonesNAryTree.h"
+#include "simpleSymbolTable.h"
 
 
 //
@@ -12,6 +13,14 @@
 
 
 extern nAryTree< int > programTree;
+
+
+//
+// Symbol Table
+//
+
+
+extern simpleSymbolTable symbolTable;
 
 
 //

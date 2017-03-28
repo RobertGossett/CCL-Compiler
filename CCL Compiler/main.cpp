@@ -9,6 +9,7 @@ using namespace std;
 // #include "codegen.h"
 #include "error.h"
 #include "main.h"
+#include "simpleSymbolTable.h"
 
 
 //
@@ -26,6 +27,14 @@ int yyparse();
 
 
 nAryTree< int > programTree;
+
+
+//
+// Symbol Table
+//
+
+
+simpleSymbolTable symbolTable;
 
 
 //

@@ -21,7 +21,7 @@ COMPILER = scCCL
 #
 
 CXX = g++
-CXXFLAGS =
+CXXFLAGS = -ILibrary
 #CXXFLAGS = -g -DYYDEBUG
 LIBS =
 
@@ -33,21 +33,23 @@ YFLAGS = -b sc
 #YFLAGS = -b sc -v
 
 # ommitted codegen.o in both lines
-$(COMPILER): error.o main.o scanner.o sc.tab.o sc.yy.o
-	$(CXX) $(CXXFLAGS) -o $(COMPILER) error.o main.o scanner.o sc.tab.o sc.yy.o $(LIBS)
+$(COMPILER): error.o main.o scanner.o sc.tab.o sc.yy.o simpleSymbolTable.o
+	$(CXX) $(CXXFLAGS) -o $(COMPILER) error.o main.o scanner.o sc.tab.o sc.yy.o simpleSymbolTable.o $(LIBS)
 
 # codegen.o: bareBonesNAryTree.h codegen.cpp codegen.h sc.tab.hh
 
 error.o: error.cpp error.h scanner.h
 
 # codegen.h ommitted
-main.o: bareBonesNAryTree.h error.h main.cpp main.h
-
-scanner.o: scanner.cpp scanner.h 
+main.o: bareBonesNAryTree.h error.h main.cpp main.h simpleSymbolTable.h
 
 sc.tab.o: bareBonesNAryTree.h error.o main.o scanner.o sc.tab.cc sc.tab.hh
 
 sc.yy.o: bareBonesNAryTree.h sc.tab.hh sc.yy.cc
+
+scanner.o: scanner.cpp scanner.h 
+
+simpleSymbolTable.o: simpleSymbolTable.cpp simpleSymbolTable.h
 
 sc.tab.cc sc.tab.hh: $(GRAMMAR)
 	$(YACC) $(YFLAGS) $(GRAMMAR)
@@ -66,6 +68,8 @@ main.cpp: ;
 main.h: ;
 scanner.cpp: ;
 scanner.h: ;
+simpleSymbolTable.cpp: ;
+simpleSymbolTable.h: ;
 bareBonesNAryTree.h: abstractNAryTree.h
 	touch bareBonesNAryTree.h
 abstractNAryTree.h: ;

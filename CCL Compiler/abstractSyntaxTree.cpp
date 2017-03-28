@@ -401,6 +401,152 @@ void programAbstractSyntaxTreeNode::accept(abstractAbstractSyntaxTreeVisitor & v
 
 
 ////////
+//////// class functionConstantAbstractSyntaxTree
+////////
+
+
+////
+//// public members
+////
+
+
+functionConstantAbstractSyntaxTree::functionConstantAbstractSyntaxTree()
+    : abstractSyntaxTree()
+{
+
+    }
+
+
+functionConstantAbstractSyntaxTree::functionConstantAbstractSyntaxTree(abstractSyntaxTree const & parameter, abstractSyntaxTree const & body)
+    : abstractSyntaxTree(new functionConstantAbstractSyntaxTreeNode(parameter, body))
+{
+
+    }
+
+
+////////
+//////// class functionConstantAbstractSyntaxTreeNode
+////////
+
+
+////
+//// public members
+////
+
+abstractSyntaxTree & functionConstantAbstractSyntaxTreeNode::parameterReference()
+{
+
+    return myParameter;
+
+    }
+
+
+abstractSyntaxTree const & functionConstantAbstractSyntaxTreeNode::parameterConstReference() const
+{
+
+    return myParameter;
+
+    }
+
+
+
+abstractSyntaxTree & functionConstantAbstractSyntaxTreeNode::bodyReference()
+{
+
+    return myBody;
+
+    }
+
+
+abstractSyntaxTree const & functionConstantAbstractSyntaxTreeNode::bodyConstReference() const
+{
+
+    return myBody;
+
+    }
+
+
+functionConstantAbstractSyntaxTreeNode::functionConstantAbstractSyntaxTreeNode(abstractSyntaxTree const & parameter, abstractSyntaxTree const & body)
+    : myParameter(parameter), myBody(body)
+{
+
+    }
+
+
+void functionConstantAbstractSyntaxTreeNode::accept(abstractAbstractSyntaxTreeVisitor & visitor)
+{
+
+    visitor.visitFunctionConstantAbstractSyntaxTreeNode(this);
+
+    }
+
+
+////////
+//////// class formalParameterDeclarationPartAbstractSyntaxTree
+////////
+
+
+////
+//// public members
+////
+
+
+formalParameterDeclarationPartAbstractSyntaxTree::formalParameterDeclarationPartAbstractSyntaxTree()
+    : abstractSyntaxTree()
+{
+
+    }
+
+
+formalParameterDeclarationPartAbstractSyntaxTree::formalParameterDeclarationPartAbstractSyntaxTree(abstractSyntaxTree const & body)
+    : abstractSyntaxTree(new formalParameterDeclarationPartAbstractSyntaxTreeNode(body))
+{
+
+    }
+
+
+////////
+//////// class programAbstractSyntaxTreeNode
+////////
+
+
+////
+//// public members
+////
+
+
+abstractSyntaxTree & formalParameterDeclarationPartAbstractSyntaxTreeNode::bodyReference()
+{
+
+    return myBody;
+
+    }
+
+
+abstractSyntaxTree const & formalParameterDeclarationPartAbstractSyntaxTreeNode::bodyConstReference() const
+{
+
+    return myBody;
+
+    }
+
+
+formalParameterDeclarationPartAbstractSyntaxTreeNode::formalParameterDeclarationPartAbstractSyntaxTreeNode(abstractSyntaxTree const & body)
+    : myBody(body)
+{
+
+    }
+
+
+void formalParameterDeclarationPartAbstractSyntaxTreeNode::accept(abstractAbstractSyntaxTreeVisitor & visitor)
+{
+
+    visitor.visitFormalParameterDeclarationPartAbstractSyntaxTreeNode(this);
+
+    }
+
+
+////////
 //////// class expressionSequenceAbstractSyntaxTree
 ////////
 
